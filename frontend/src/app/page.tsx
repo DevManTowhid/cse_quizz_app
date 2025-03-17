@@ -1,9 +1,10 @@
+"use client";
 import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation'
- 
+
 export default function Home() {
   const router = useRouter();
-
+  const categories = ['Python', 'Machine Learning', 'Deep Learning'];
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {/* Hero Section */}
@@ -14,8 +15,17 @@ export default function Home() {
 
       {/* Category Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-        {['Python', 'Machine Learning', 'Deep Learning'].map((category) => (
-          <Button  key={category} href={`/quiz/${category.toLowerCase()}`}>
+        {categories.map((category) => (
+          <Button
+          onClick = {() => router.push(`/quiz/${category}`)}
+          key={category}
+          className="focus:outline-none"
+          variant="flat"
+          color="primary"
+          size="lg"
+          >
+
+          
             <div className="p-6 bg-white shadow-lg rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer transition">
               <h2 className="text-2xl font-semibold text-center">{category}</h2>
             </div>
@@ -23,5 +33,6 @@ export default function Home() {
         ))}
       </div>
     </div>
+    
   );
 }
