@@ -1,5 +1,6 @@
 class QuizQuestion:
-    def __init__(self, question_text, correct_answers, wrong_answers, explanation_correct, explanation_wrong):
+    def __init__(self, id, question_text, correct_answers, wrong_answers, explanation_correct, explanation_wrong):
+        self.id = id
         self.question_text = question_text
         self.correct_answers = correct_answers  # List of correct answers
         self.wrong_answers = wrong_answers  # List of wrong answers
