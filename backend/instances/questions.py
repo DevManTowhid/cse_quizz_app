@@ -1,4 +1,4 @@
-from backend.classes.questions import QuizQuestion
+from classes.questions import QuizQuestion
 # Creating a list of QuizQuestion instances
 quiz_questions = [
     QuizQuestion(

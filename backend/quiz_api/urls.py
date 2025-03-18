@@ -17,7 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-
+from .views import getdummyquestions
 urlpatterns = [
-    path("admin/", admin.site.urls),
+   
+    path("dummy-quiz/", getdummyquestions, name="dummy-quiz"),
+
 ]
