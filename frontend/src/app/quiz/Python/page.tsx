@@ -1,26 +1,26 @@
-"use client";
+import axios from "axios";
 
-import { Button } from "@nextui-org/react";
+const fetchQuestions = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/dummy-quiz/", {
+      withCredentials: true, // If Django uses authentication
+    });
+    console.log("Data received:", response.data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Error fetching data:", error.response ? error.response.data : error.message);
+    } else {
+      console.error("Unknown Error fetching data:", error);
+    }
+  }
+};
 
+fetchQuestions();
 export default function PythonQuizPage() {
-  const startQuiz = () => {
-    alert("Starting Python Quiz!");
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-gray-800">Python Quiz</h1>
-      <p className="text-gray-600 mt-3">Test your Python knowledge with our quiz.</p>
-
-      <Button
-        color="primary"
-        variant="solid"
-        size="lg"
-        className="mt-6"
-        onClick={startQuiz}
-      >
-        Start Quiz
-      </Button>
+    <div>
+      <h1>Python Quiz</h1>
+      <p>Welcome to the Python quiz page.</p>
     </div>
   );
 }

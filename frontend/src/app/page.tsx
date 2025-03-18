@@ -17,7 +17,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
         {categories.map((category) => (
           <Button
-          onClick = {() => router.push(`/quiz/${category}`)}
+          onPress = {() => router.push(`/quiz/${category}`)}
           key={category}
           className="focus:outline-none"
           variant="flat"

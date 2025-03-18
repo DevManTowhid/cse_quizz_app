@@ -10,12 +10,3 @@ def getdummyquestions(request):
         "explanation_correct": question.explanation_correct,
         "explanation_wrong": question.explanation_wrong
     } for question in quiz_questions], safe=False)
-# Compare this snippet from backend/quiz_api/urls.py:
-# from django.urls import path
-# from . import views
-#
-
-# urlpatterns = [
-#     path('questions/', views.getdummyquestions),
-# ]
-# Compare this snippet from backend/quiz_api/views.py:        
