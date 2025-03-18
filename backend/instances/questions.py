@@ -1,21 +1,8 @@
-class QuizQuestion:
-    def __init__(self, question_text, correct_answers, wrong_answers, explanation_correct, explanation_wrong):
-        self.question_text = question_text
-        self.correct_answers = correct_answers  # List of correct answers
-        self.wrong_answers = wrong_answers  # List of wrong answers
-        self.explanation_correct = explanation_correct
-        self.explanation_wrong = explanation_wrong
-
-    def is_correct(self, answer):
-        """Check if an answer is correct."""
-        return answer in self.correct_answers
-
-    def __str__(self):
-        return f"Question: {self.question_text}\nCorrect: {self.correct_answers}\nWrong: {self.wrong_answers}"
-
+from backend.classes.questions import QuizQuestion
 # Creating a list of QuizQuestion instances
 quiz_questions = [
     QuizQuestion(
+        id = 1,
         question_text="What is the output of `print(2 ** 3)`?",
         correct_answers=["8"],
         wrong_answers=["6", "9", "16"],
@@ -23,6 +10,7 @@ quiz_questions = [
         explanation_wrong="Exponentiation in Python is done using `**`, not `*`."
     ),
     QuizQuestion(
+        id = 2,
         question_text="Which of the following is a mutable data type in Python?",
         correct_answers=["List"],
         wrong_answers=["Tuple", "String", "Integer"],
@@ -30,6 +18,7 @@ quiz_questions = [
         explanation_wrong="Tuples, strings, and integers are immutable in Python."
     ),
     QuizQuestion(
+        id = 3,
         question_text="What will `len(['a', 'b', 'c', 'd'])` return?",
         correct_answers=["4"],
         wrong_answers=["3", "5", "Error"],
@@ -37,6 +26,7 @@ quiz_questions = [
         explanation_wrong="It does not count from 0; it counts total elements."
     ),
     QuizQuestion(
+        id = 4,
         question_text="How do you define a function in Python?",
         correct_answers=["Using `def` keyword"],
         wrong_answers=["Using `function` keyword", "Using `func` keyword", "Using `define` keyword"],
@@ -44,6 +34,7 @@ quiz_questions = [
         explanation_wrong="There is no `function` or `define` keyword in Python."
     ),
     QuizQuestion(
+        id = 5,
         question_text="What will be the output of `bool([])`?",
         correct_answers=["False"],
         wrong_answers=["True", "None", "Error"],
