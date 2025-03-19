@@ -1,5 +1,17 @@
 from instances.questions import quiz_questions
 from django.http import JsonResponse
+import pyrebase
+
+# Firebase configuration
+firebase_config = {
+    "apiKey": "your_api_key",
+    "authDomain": "your_auth_domain",
+    "databaseURL": "your_database_url",
+    "storageBucket": "your_storage_bucket"
+}
+
+firebase = pyrebase.initialize_app(firebase_config)
+firebase_db = firebase.database()
 def getdummyquestions(request):
     """Return a list of dummy quiz questions."""
     return JsonResponse([{
