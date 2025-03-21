@@ -1,8 +1,10 @@
 from instances.questions import quiz_questions
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import pyrebase
+import json
 
-# Firebase configuration
+# Firebase configuration (Move to environment variables in production)
 firebase_config = {
     "apiKey": "your_api_key",
     "authDomain": "your_auth_domain",
@@ -12,33 +14,47 @@ firebase_config = {
 
 firebase = pyrebase.initialize_app(firebase_config)
 firebase_db = firebase.database()
+
 def getdummyquestions(request):
     """Return a list of dummy quiz questions."""
-    return JsonResponse([{
-        "id": question.id,
-        "question_text": question.question_text,
-        "correct_answers": question.correct_answers,
-        "wrong_answers": question.wrong_answers,
-        "explanation_correct": question.explanation_correct,
-        "explanation_wrong": question.explanation_wrong
-    } for question in quiz_questions], safe=False)
-
-
-def push_dummy_quiz_data(request):
-    dummy_quiz_data = {
-        "quiz1": {
-            "question": "What is the capital of France?",
-            "options": ["Berlin", "Madrid", "Paris", "Lisbon"],
-            "answer": "Paris"
-        },
-        "quiz2": {
-            "question": "Which planet is known as the Red Planet?",
-            "options": ["Earth", "Mars", "Jupiter", "Venus"],
-            "answer": "Mars"
+    return JsonResponse([
+        {
+            "id": question.id,
+            "question_text": question.question_text,
+            "correct_answers": question.correct_answers,
+            "wrong_answers": question.wrong_answers,
+            "explanation_correct": question.explanation_correct,
+            "explanation_wrong": question.explanation_wrong
         }
-    }
+        for question in quiz_questions
+    ], safe=False)
 
-    # Push data to Firebase
-    firebase_db.child("quizzes").set(dummy_quiz_data)
 
-    return JsonResponse({"message": "Dummy quiz data added to Firebase!"})
+@csrf_exempt  # Needed if sending requests from frontend without CSRF token
+def push_dummy_quiz_data(request):
+    """Push dummy quiz data to Firebase."""
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+    try:
+        # Convert quiz_questions to dictionary format
+        quiz_data = {
+            f"question_{i+1}": {
+                "id": question.id,
+                "question_text": question.question_text,
+                "correct_answers": question.correct_answers,
+                "wrong_answers": question.wrong_answers,
+                "explanation_correct": question.explanation_correct,
+                "explanation_wrong": question.explanation_wrong
+            }
+            for i, question in enumerate(quiz_questions)
+        }
+
+        # Push data to Firebase
+        firebase_db.child("quizzes").set(quiz_data)
+
+        return JsonResponse({"message": "Dummy quiz data added to Firebase!"})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
