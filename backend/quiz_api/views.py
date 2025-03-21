@@ -1,46 +1,29 @@
-from instances.questions import quiz_questions
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import pyrebase
 import json
+from google.cloud import firestore  
+from instances.questions import quiz_questions  
+from firebase_config import firestore_db as db  
 
-# Firebase configuration (Move to environment variables in production)
-firebase_config = {
-    "apiKey": "your_api_key",
-    "authDomain": "your_auth_domain",
-    "databaseURL": "your_database_url",
-    "storageBucket": "your_storage_bucket"
-}
+# Debugging: Check Firestore connection
+print("📌 Starting script: Connecting to Firestore...")
 
-firebase = pyrebase.initialize_app(firebase_config)
-firebase_db = firebase.database()
+try:
+    test_doc = db.collection("test").document("connection_test").get()
+    if test_doc.exists:
+        print("✅ Firestore is connected successfully!")
+    else:
+        print("⚠️ Firestore is connected, but test document does not exist.")
+except Exception as e:
+    print(f"❌ Firestore connection failed: {e}")
 
-def getdummyquestions(request):
+def get_dummy_questions(request):
     """Return a list of dummy quiz questions."""
-    return JsonResponse([
-        {
-            "id": question.id,
-            "question_text": question.question_text,
-            "correct_answers": question.correct_answers,
-            "wrong_answers": question.wrong_answers,
-            "explanation_correct": question.explanation_correct,
-            "explanation_wrong": question.explanation_wrong
-        }
-        for question in quiz_questions
-    ], safe=False)
-
-
-@csrf_exempt  # Needed if sending requests from frontend without CSRF token
-def push_dummy_quiz_data(request):
-    """Push dummy quiz data to Firebase."""
-
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+    print("📌 get_dummy_questions() called!")
 
     try:
-        # Convert quiz_questions to dictionary format
-        quiz_data = {
-            f"question_{i+1}": {
+        questions_list = [
+            {
                 "id": question.id,
                 "question_text": question.question_text,
                 "correct_answers": question.correct_answers,
@@ -48,13 +31,44 @@ def push_dummy_quiz_data(request):
                 "explanation_correct": question.explanation_correct,
                 "explanation_wrong": question.explanation_wrong
             }
-            for i, question in enumerate(quiz_questions)
-        }
-
-        # Push data to Firebase
-        firebase_db.child("quizzes").set(quiz_data)
-
-        return JsonResponse({"message": "Dummy quiz data added to Firebase!"})
+            for question in quiz_questions
+        ]
+        print(f"✅ Retrieved {len(questions_list)} questions successfully!")
+        return JsonResponse(questions_list, safe=False)
 
     except Exception as e:
+        print(f"❌ Error retrieving questions: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+def push_dummy_quiz_data(request):
+    """Push dummy quiz data to Firestore."""
+    print("📌 push_dummy_quiz_data() called!")
+
+    if request.method != "POST":
+        print("❌ Invalid request method. Expected POST.")
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+    try:
+        print("🚀 Pushing quiz data to Firestore...")
+        
+        for question in quiz_questions:
+            print(f"📝 Pushing question ID: {question.id}")
+
+            # Firestore write operation
+            db.collection("quizzes").document(str(question.id)).set({
+                "id": question.id,
+                "question_text": question.question_text,
+                "correct_answers": question.correct_answers,
+                "wrong_answers": question.wrong_answers,
+                "explanation_correct": question.explanation_correct,
+                "explanation_wrong": question.explanation_wrong
+            })
+
+        print("✅ All dummy quiz data added to Firestore!")
+        return JsonResponse({"message": "Dummy quiz data added to Firestore!"})
+
+    except Exception as e:
+        print(f"❌ Firestore error: {e}")
         return JsonResponse({"error": str(e)}, status=500)
